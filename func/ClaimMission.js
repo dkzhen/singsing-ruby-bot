@@ -1,6 +1,7 @@
 const dotenv = require("dotenv");
 const fs = require("fs").promises;
 const axios = require("axios");
+const { getTokenAuth } = require("./getToken");
 dotenv.config();
 
 const API_URL = "https://miniapp-api.singsing.net/mission?type=bonus_vault";
@@ -9,54 +10,60 @@ const CLAIM_API_URL = "https://miniapp-api.singsing.net/mission/check";
 exports.claimMission = async function () {
   try {
     // Read the JSON file containing tokens
-    const data = await fs.readFile("configs/config.json", "utf-8");
-    const tokens = JSON.parse(data);
 
-    // Loop through each token and make a GET request
-    for (const token of tokens) {
-      try {
-        const response = await axios.get(API_URL, {
-          headers: {
-            Authorization: `Bearer ${token.token}`,
-          },
-        });
+    const tokens = await getTokenAuth();
 
-        const missions = response.data.data; // Assuming missions data is in response.data.data
+    if (tokens !== null) {
+      for (const token of tokens) {
+        try {
+          const response = await axios.get(API_URL, {
+            headers: {
+              Authorization: `Bearer ${token.token}`,
+            },
+          });
 
-        // Loop through each mission and make API requests
-        for (const mission of missions) {
-          if (!mission.completed) {
-            try {
-              const BODY_DATA = {
-                mission_key: mission.key,
-              };
+          const missions = response.data.data; // Assuming missions data is in response.data.data
 
-              const claimResponse = await axios.post(CLAIM_API_URL, BODY_DATA, {
-                headers: {
-                  Authorization: `Bearer ${token.token}`,
-                  "Content-Type": "application/json",
-                },
-              });
+          // Loop through each mission and make API requests
+          for (const mission of missions) {
+            if (!mission.completed) {
+              try {
+                const BODY_DATA = {
+                  mission_key: mission.key,
+                };
 
-              console.log(
-                `Claimed mission ${mission.key}. Response status: ${claimResponse.status}`
-              );
-              console.log(claimResponse.data);
-            } catch (error) {
-              console.error(
-                `Error claiming mission ${mission.key} with token ${token.token}:`,
-                error
-              );
+                const claimResponse = await axios.post(
+                  CLAIM_API_URL,
+                  BODY_DATA,
+                  {
+                    headers: {
+                      Authorization: `Bearer ${token.token}`,
+                      "Content-Type": "application/json",
+                    },
+                  }
+                );
+
+                console.log(
+                  `Claimed mission ${mission.key}. Response status: ${claimResponse.status}`
+                );
+                console.log(claimResponse.data);
+              } catch (error) {
+                console.error(
+                  `Error claiming mission ${mission.key} with token ${token.token}:`,
+                  error
+                );
+              }
             }
           }
+        } catch (error) {
+          console.error(
+            `Error fetching missions data with token ${token.token}:`,
+            error
+          );
         }
-      } catch (error) {
-        console.error(
-          `Error fetching missions data with token ${token.token}:`,
-          error
-        );
       }
     }
+    // Loop through each token and make a GET request
   } catch (error) {
     console.error("Error reading tokens file:", error);
   }
