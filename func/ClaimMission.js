@@ -14,9 +14,9 @@ exports.claimMission = async function () {
     // Read the JSON file containing tokens
 
     const tokens = await getTokenAuth();
-    const tokenFilter = tokens.filter((token) => token.telegramId !== null);
 
     if (tokens !== null) {
+      const tokenFilter = tokens.filter((token) => token.telegramId !== null);
       for (const token of tokenFilter) {
         try {
           const response = await axios.get(API_URL, {
