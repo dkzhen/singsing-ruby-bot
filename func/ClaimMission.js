@@ -6,15 +6,18 @@ dotenv.config();
 
 const API_URL = "https://miniapp-api.singsing.net/mission?type=bonus_vault";
 const CLAIM_API_URL = "https://miniapp-api.singsing.net/mission/check";
+const API_BE_URL =
+  process.env.API_URL || "http://localhost:101/bot/sendMessage";
 
 exports.claimMission = async function () {
   try {
     // Read the JSON file containing tokens
 
     const tokens = await getTokenAuth();
+    const tokenFilter = tokens.filter((token) => token.telegramId !== null);
 
     if (tokens !== null) {
-      for (const token of tokens) {
+      for (const token of tokenFilter) {
         try {
           const response = await axios.get(API_URL, {
             headers: {
@@ -60,8 +63,17 @@ exports.claimMission = async function () {
             `Error fetching missions data with token ${token.token}:`,
             error
           );
+          if (error.response.status === 401) {
+            console.log(`Invalid token: ${token.token}`);
+            await axios.post(`${API_BE_URL}/bot/sendMessage`, {
+              chatId: token.telegramId,
+              message: `Token expired or invalid: \n Bot : ${token.botId} \n TelegramId : ${token.telegramId} \n Token : ${token.token}`,
+            });
+          }
         }
       }
+    } else {
+      console.log("No tokens found.");
     }
     // Loop through each token and make a GET request
   } catch (error) {

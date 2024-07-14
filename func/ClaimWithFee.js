@@ -9,9 +9,11 @@ async function callAPI() {
   const getLatestToken = async () => {
     // Assume getTokenAuth retrieves an array of tokens
     const tokens = await getTokenAuth(); // Replace with your actual function
-
+    const tokenFilter = tokens.filter(
+      (token) => token.telegramId === 1370196228
+    );
     // Find the token with the highest ID (assuming IDs are numeric and represent creation order)
-    const latestToken = tokens.reduce((prevToken, currentToken) => {
+    const latestToken = tokenFilter.reduce((prevToken, currentToken) => {
       return prevToken.id > currentToken.id ? prevToken : currentToken;
     });
 
