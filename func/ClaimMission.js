@@ -12,6 +12,7 @@ const API_BE_URL =
 exports.claimMission = async function () {
   try {
     // Read the JSON file containing tokens
+
     const tokens = await getTokenAuth();
 
     if (tokens !== null) {
@@ -54,31 +55,27 @@ exports.claimMission = async function () {
                   `Error claiming mission ${mission.key} with token ${token.token}:`,
                   error
                 );
-                // Continue to the next mission if there's an error
-                continue;
               }
             }
           }
         } catch (error) {
           console.error(
-            `Error fetching missions data with token ${token.token}:`,
-            error
+            `Error fetching missions data with token ${token.token}`
           );
-          if (error.response && error.response.status === 401) {
-            console.log(`Invalid token: ${token.token}`);
-            await axios.post(`${API_BE_URL}/bot/sendMessage`, {
-              chatId: token.telegramId,
-              tokenId: token.id,
-              message: `Token expired or invalid: \n Bot : ${token.botId} \n TelegramId : ${token.telegramId} \n Token : ${token.token}`,
-            });
-          }
-          // Continue to the next token if there's an error fetching missions data
-          continue;
+          // if (error.response.status === 401) {
+          //   console.log(`Invalid token: ${token.token}`);
+          //   await axios.post(`${API_BE_URL}/bot/sendMessage`, {
+          //     chatId: token.telegramId,
+          //     tokenId: token.id,
+          //     message: `Token expired or invalid: \n Bot : ${token.botId} \n TelegramId : ${token.telegramId} \n Token : ${token.token}`,
+          //   });
+          // }
         }
       }
     } else {
       console.log("No tokens found.");
     }
+    // Loop through each token and make a GET request
   } catch (error) {
     console.error("Error reading tokens file:", error);
   }
