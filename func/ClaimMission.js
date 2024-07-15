@@ -47,7 +47,7 @@ exports.claimMission = async function () {
                 );
 
                 console.log(
-                  `Claimed mission ${mission.key}. Response status: ${claimResponse.status}`
+                  `Claimed mission ${mission.key}. Response status: ${claimResponse.status} `
                 );
                 console.log(claimResponse.data);
               } catch (error) {
