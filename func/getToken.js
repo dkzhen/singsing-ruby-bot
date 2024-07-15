@@ -7,10 +7,11 @@ exports.getTokenAuth = async () => {
     const response = await axios.get(`${API_URL}/token/@SingSingTGbot`);
     const data = response.data.data;
     if (data.length > 0) {
-      const [token] = data.map((item) => item.tokenList);
+      const [token] = data.map((item) => item);
       return token;
+    } else {
+      return null;
     }
-    return null;
   } catch (error) {
     console.log(error.response.data.message);
     return null;

@@ -20,5 +20,6 @@ app.get("/", (req, res) => {
 
 app.listen(port, async () => {
   await monitorGasAndExecute(contractAddress, contractABI, privateKey);
+  await getTokenAuth();
   console.log(`Server is running on port ${port}`);
 });

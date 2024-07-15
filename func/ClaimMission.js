@@ -12,7 +12,6 @@ const API_BE_URL =
 exports.claimMission = async function () {
   try {
     // Read the JSON file containing tokens
-
     const tokens = await getTokenAuth();
 
     if (tokens !== null) {
