@@ -54,6 +54,8 @@ exports.claimMission = async function () {
                   `Error claiming mission ${mission.key} with token ${token.token}:`,
                   error
                 );
+                // Continue to the next mission if there's an error
+                continue;
               }
             }
           }
@@ -70,6 +72,8 @@ exports.claimMission = async function () {
               message: `Token expired or invalid: \n Bot : ${token.botId} \n TelegramId : ${token.telegramId} \n Token : ${token.token}`,
             });
           }
+          // Continue to the next token if there's an error fetching missions data
+          continue;
         }
       }
     } else {
