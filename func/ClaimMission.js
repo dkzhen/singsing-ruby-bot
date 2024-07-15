@@ -60,16 +60,16 @@ exports.claimMission = async function () {
           }
         } catch (error) {
           console.error(
-            `Error fetching missions data with token ${token.token}`
+            `Error fetching missions data with token ${token.token}:`
           );
-          // if (error.response.status === 401) {
-          //   console.log(`Invalid token: ${token.token}`);
-          //   await axios.post(`${API_BE_URL}/bot/sendMessage`, {
-          //     chatId: token.telegramId,
-          //     tokenId: token.id,
-          //     message: `Token expired or invalid: \n Bot : ${token.botId} \n TelegramId : ${token.telegramId} \n Token : ${token.token}`,
-          //   });
-          // }
+          if (error.response.status === 401) {
+            console.log(`Invalid token: ${token.token}`);
+            await axios.post(`${API_BE_URL}/bot/sendMessage`, {
+              chatId: token.telegramId,
+              tokenId: token.id,
+              message: `Token expired or invalid: \n Bot : ${token.botId} \n TelegramId : ${token.telegramId} \n Token : ${token.token}`,
+            });
+          }
         }
       }
     } else {
