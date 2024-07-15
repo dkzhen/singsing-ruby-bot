@@ -62,7 +62,7 @@ exports.claimMission = async function () {
             `Error fetching missions data with token ${token.token}:`,
             error
           );
-          if (error.response.status === 401) {
+          if (error.response && error.response.status === 401) {
             console.log(`Invalid token: ${token.token}`);
             await axios.post(`${API_BE_URL}/bot/sendMessage`, {
               chatId: token.telegramId,
@@ -75,7 +75,6 @@ exports.claimMission = async function () {
     } else {
       console.log("No tokens found.");
     }
-    // Loop through each token and make a GET request
   } catch (error) {
     console.error("Error reading tokens file:", error);
   }
