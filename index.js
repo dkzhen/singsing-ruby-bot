@@ -1,10 +1,6 @@
 const cron = require("node-cron");
 const express = require("express");
-const monitorGasAndExecute = require("./func/MonitorGasFee");
-const { contractAddress, privateKey } = require("./configs/config");
-const { contractABI } = require("./configs/ABI");
 const { claimMission } = require("./func/ClaimMission");
-const { getTokenAuth } = require("./func/getToken");
 
 // Schedule the task to run every hour on the hour
 claimMission();
@@ -19,6 +15,5 @@ app.get("/", (req, res) => {
 });
 
 app.listen(port, async () => {
-  await monitorGasAndExecute(contractAddress, contractABI, privateKey);
   console.log(`Server is running on port ${port}`);
 });

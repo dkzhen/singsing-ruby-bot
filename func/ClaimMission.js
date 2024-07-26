@@ -62,7 +62,14 @@ exports.claimMission = async function () {
           console.error(
             `Error fetching missions data with token ${token.token}:`
           );
-          if (error.response.status === 401) {
+          if (token?.telegramId) {
+            await axios.post(`${API_BE_URL}/bot/sendMessage`, {
+              chatId: token.telegramId,
+              tokenId: token.id,
+              message: `Token expired or invalid: \n Bot : ${token.botId} \n TelegramId : ${token.telegramId} \n Token : ${token.token}`,
+            });
+          }
+          if (error.response?.status === 401) {
             console.log(`Invalid token: ${token.token}`);
             await axios.post(`${API_BE_URL}/bot/sendMessage`, {
               chatId: token.telegramId,
