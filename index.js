@@ -5,9 +5,9 @@ const { getTokenAuth } = require("./func/getToken");
 const { validateToken } = require("./func/checkValidation");
 
 // Schedule the task to run every hour on the hour
-// claimMission();
+claimMission();
 console.log(`[ BOT ] : Bot starting...`);
-// cron.schedule("0 * * * *", claimMission);
+cron.schedule("0 * * * *", claimMission);
 
 // Start the server
 const port = process.env.PORT || 102;
@@ -18,6 +18,5 @@ app.get("/", (req, res) => {
 });
 
 app.listen(port, async () => {
-  claimMission();
   console.log(`[ BOT ] : Server is running on port ${port}`);
 });
