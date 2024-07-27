@@ -4,27 +4,50 @@ singsing-ruby-bot is a Telegram automation tool designed to help you manage and 
 
 <p align="center">
   <img src="public/singsing.jpg" alt="Sing Sing" width="300"/>
-  <img src="public/groupOrganizer.jpg" alt="Group Organizer" width="300"/>
+  <img src="public/run.png" alt="run" width="300"/>
 </p>
 
 ### Features
 
 - Auto claim Hourly mission
 - Auto claim Daily mission
-- Auto claim with fee from mining (available only for owner)
 
 ### How to use
 
-For now this bot available only for owner or you can edit this code up to you. but you can add you token authorization.
-
-this bot running on my vps you can add your token authorization
-
-- open the bot [Group Organizer](https://t.me/GroupOrganizer_Bot)
-- send command `/start`
-- send command `/add`
-- and send your token authorization
-
 [ WARNING ] this bot in development stage, if bot error you can try again. some error or bug will be fixed.
+
+you can clone repository and add your token authorization
+
+- Clone repository
+
+```bash
+git clone https://github.com/dkzhen/singsing-ruby-bot.git
+```
+
+- add config.json on folder configs nad if you multiple account format like this
+
+```json
+[
+  {
+    "token": "eyJh"
+  },
+  {
+    "token": "eyJh"
+  }
+]
+```
+
+- install modules
+
+```bash
+npm install
+```
+
+- running script
+
+```bash
+npm run prod
+```
 
 ### Token authorization
 

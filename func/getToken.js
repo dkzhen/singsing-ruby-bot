@@ -1,19 +1,19 @@
-const axios = require("axios");
+const fs = require("fs").promises;
 
 exports.getTokenAuth = async () => {
   try {
-    const API_URL =
-      process.env.API_URL || "http://localhost:101/token/@SingSingTGbot";
-    const response = await axios.get(`${API_URL}/token/@SingSingTGbot`);
-    const data = response.data.data;
-    if (data.length > 0) {
-      const [token] = data.map((item) => item);
-      return token;
-    } else {
-      return null;
-    }
+    const data = await fs.readFile("configs/config.json", "utf-8");
+    const tokens = JSON.parse(data);
+    tokens.map((item, index) => {
+      console.log(`\n[ Token ${index + 1} ] : ${item.token}`);
+    });
+    console.log(`[ Total tokens ] : ${tokens.length}`);
+
+    return tokens;
   } catch (error) {
-    console.log(error.response.data.message);
+    console.log(
+      `[ Error ] : Token not found, please add token on configs/config.json`
+    );
     return null;
   }
 };

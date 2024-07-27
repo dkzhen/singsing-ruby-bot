@@ -2,30 +2,24 @@ const dotenv = require("dotenv");
 const fs = require("fs").promises;
 const axios = require("axios");
 const { getTokenAuth } = require("./getToken");
+const { getMission, getProfile } = require("./repo");
+const { validateToken } = require("./checkValidation");
 dotenv.config();
 
-const API_URL = "https://miniapp-api.singsing.net/mission?type=bonus_vault";
 const CLAIM_API_URL = "https://miniapp-api.singsing.net/mission/check";
-const API_BE_URL =
-  process.env.API_URL || "http://localhost:101/bot/sendMessage";
 
 exports.claimMission = async function () {
   try {
-    // Read the JSON file containing tokens
+    const tokens = await validateToken();
 
-    const tokens = await getTokenAuth();
-
-    if (tokens !== null) {
-      const tokenFilter = tokens.filter((token) => token.telegramId !== null);
-      for (const token of tokenFilter) {
+    if (tokens.length > 0) {
+      for (const token of tokens) {
         try {
-          const response = await axios.get(API_URL, {
-            headers: {
-              Authorization: `Bearer ${token.token}`,
-            },
-          });
-
-          const missions = response.data.data; // Assuming missions data is in response.data.data
+          const missions = await getMission(token.token);
+          const profile = await getProfile(token.token);
+          console.log(
+            `| Profile => Username : ${profile.username}\n|            Bonus_amount : ${profile.bonus_vault_amount}\n|            FirstName : ${profile.first_name}\n|            LastName : ${profile.last_name}\n|            Balance : ${profile.onchain_data.balance}\n-----------------------------------`
+          );
 
           // Loop through each mission and make API requests
           for (const mission of missions) {
@@ -47,43 +41,25 @@ exports.claimMission = async function () {
                 );
 
                 console.log(
-                  `Claimed mission ${mission.key}. Response status: ${claimResponse.status} `
+                  `[ Running   ] : Claimed ${mission.key} successfully. Response status: ${claimResponse.status} `
                 );
-                console.log(claimResponse.data);
               } catch (error) {
-                console.error(
-                  `Error claiming mission ${mission.key} with token ${token.token}:`,
-                  error
-                );
+                console.error(`[ Error ] : Claim ${mission.key} failed`);
               }
+            } else {
+              console.log(`[ Completed ] : ${mission.key} completed`);
             }
           }
+          console.log(`\n[ BOT ] : Task complete please wait 1 hour...\n`);
         } catch (error) {
-          console.error(
-            `Error fetching missions data with token ${token.token}:`
-          );
-          if (token?.telegramId) {
-            await axios.post(`${API_BE_URL}/bot/sendMessage`, {
-              chatId: token.telegramId,
-              tokenId: token.id,
-              message: `Token expired or invalid: \n Bot : ${token.botId} \n TelegramId : ${token.telegramId} \n Token : ${token.token}`,
-            });
-          }
-          if (error.response?.status === 401) {
-            console.log(`Invalid token: ${token.token}`);
-            await axios.post(`${API_BE_URL}/bot/sendMessage`, {
-              chatId: token.telegramId,
-              tokenId: token.id,
-              message: `Token expired or invalid: \n Bot : ${token.botId} \n TelegramId : ${token.telegramId} \n Token : ${token.token}`,
-            });
-          }
+          console.error(`[ Error ] : Error fetching missions `);
         }
       }
     } else {
-      console.log("No tokens found.");
+      console.log(`[ Error ] : No token found`);
     }
     // Loop through each token and make a GET request
   } catch (error) {
-    console.error("Error reading tokens file:", error);
+    console.log(`[ Error ] : mission cant claim because token not valid `);
   }
 };
